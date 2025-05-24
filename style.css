@@ -1,0 +1,55 @@
+/* style.css */
+
+body {
+  background-color: #1a1a1a; /* Dark background for the page */
+  color: #ffffff; /* Default white text color */
+  font-family: 'Arial', sans-serif; /* Default font */
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full viewport height */
+  margin: 0;
+  overflow: hidden; /* Hide scrollbars if content overflows */
+}
+
+canvas#gameCanvas {
+  border: 2px solid #ffffff; /* White border for the canvas */
+  background-color: #000000; /* Black background for the play area */
+  /* width and height are set in script.js, but you could set defaults here */
+  /* For example: width: 800px; height: 600px; */
+}
+
+.scoreboard {
+  display: flex;
+  justify-content: space-between; /* Distribute scores to sides */
+  width: 800px; /* Match canvas width or adjust as needed */
+  margin-bottom: 15px; /* Space between scores and canvas */
+}
+
+.score {
+  font-size: 28px; /* Larger font for scores */
+  font-weight: bold;
+  color: #00ff00; /* Bright green for score text */
+  padding: 5px 10px;
+  border-radius: 5px;
+  background-color: rgba(20, 20, 20, 0.5); /* Slight background for readability */
+}
+
+/* Specific positioning for individual scores if needed,
+   but flexbox in .scoreboard should handle it.
+   If absolute positioning was preferred for scores (like in the initial HTML):
+*/
+/*
+#player1-score {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+}
+
+#player2-score {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+*/
