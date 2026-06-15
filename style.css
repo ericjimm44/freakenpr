@@ -1,55 +1,490 @@
-/* style.css */
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-  background-color: #1a1a1a; /* Dark background for the page */
-  color: #ffffff; /* Default white text color */
-  font-family: 'Arial', sans-serif; /* Default font */
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+/* ---- Background ---- */
+.desktop-bg {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  position: relative;
+  overflow: hidden;
+}
+
+.desktop-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(167,139,250,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(167,139,250,.04) 1px, transparent 1px);
+  background-size: 44px 44px;
+  pointer-events: none;
+}
+
+/* ---- Companion ---- */
+.companion-container {
+  position: absolute;
+  bottom: 90px;
+  right: 130px;
   display: flex;
-  flex-direction: column; /* Stack elements vertically */
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  height: 100vh; /* Full viewport height */
-  margin: 0;
-  overflow: hidden; /* Hide scrollbars if content overflows */
+  cursor: pointer;
+  user-select: none;
+  animation: float 4s ease-in-out infinite;
 }
 
-canvas#gameCanvas {
-  border: 2px solid #ffffff; /* White border for the canvas */
-  background-color: #000000; /* Black background for the play area */
-  /* width and height are set in script.js, but you could set defaults here */
-  /* For example: width: 800px; height: 600px; */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
 }
 
-.scoreboard {
+.character-wrap {
+  position: relative;
+  width: 120px;
+}
+
+#kira {
+  width: 120px;
+  height: 200px;
+  filter: drop-shadow(0 8px 24px rgba(124,58,237,.45));
+  transition: filter .3s;
+}
+
+.companion-container:hover #kira {
+  filter: drop-shadow(0 8px 36px rgba(167,139,250,.8));
+}
+
+.companion-name {
+  color: rgba(255,255,255,.6);
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+
+.core-pulse { animation: corePulse 2s ease-in-out infinite; }
+
+@keyframes corePulse {
+  0%, 100% { opacity: .55; }
+  50%       { opacity: 1; }
+}
+
+/* Emotion overrides */
+.companion-container.excited {
+  animation: bounce .5s ease infinite alternate;
+}
+.companion-container.excited #kira {
+  filter: drop-shadow(0 8px 36px rgba(167,139,250,.9));
+}
+
+@keyframes bounce {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-8px); }
+}
+
+.companion-container.thinking #kira {
+  filter: drop-shadow(0 8px 28px rgba(96,165,250,.6));
+  animation: float 2s ease-in-out infinite;
+}
+
+/* ---- Speech bubble ---- */
+.speech-bubble {
+  position: absolute;
+  bottom: 205px;
+  right: -24px;
+  background: rgba(255,255,255,.96);
+  border-radius: 16px 16px 4px 16px;
+  padding: 10px 14px;
+  min-width: 170px;
+  max-width: 250px;
+  font-size: 13px;
+  color: #1e1b4b;
+  line-height: 1.55;
+  box-shadow: 0 4px 20px rgba(0,0,0,.28);
+  opacity: 0;
+  transform: scale(.85) translateY(8px);
+  transition: opacity .25s, transform .25s;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.speech-bubble.visible {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+/* ---- Chat panel ---- */
+.chat-panel {
+  position: absolute;
+  bottom: 90px;
+  right: 280px;
+  width: 320px;
+  height: 420px;
+  background: rgba(12,10,38,.93);
+  border: 1px solid rgba(167,139,250,.28);
+  border-radius: 18px;
   display: flex;
-  justify-content: space-between; /* Distribute scores to sides */
-  width: 800px; /* Match canvas width or adjust as needed */
-  margin-bottom: 15px; /* Space between scores and canvas */
+  flex-direction: column;
+  backdrop-filter: blur(22px);
+  box-shadow: 0 8px 40px rgba(0,0,0,.55);
+  opacity: 0;
+  transform: translateX(16px) scale(.96);
+  transition: opacity .28s, transform .28s;
+  pointer-events: none;
+  z-index: 20;
 }
 
-.score {
-  font-size: 28px; /* Larger font for scores */
-  font-weight: bold;
-  color: #00ff00; /* Bright green for score text */
-  padding: 5px 10px;
-  border-radius: 5px;
-  background-color: rgba(20, 20, 20, 0.5); /* Slight background for readability */
+.chat-panel.open {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+  pointer-events: all;
 }
 
-/* Specific positioning for individual scores if needed,
-   but flexbox in .scoreboard should handle it.
-   If absolute positioning was preferred for scores (like in the initial HTML):
-*/
-/*
-#player1-score {
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(167,139,250,.2);
+  flex-shrink: 0;
+}
+
+.chat-title {
+  color: #a78bfa;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: .4px;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,.4);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 4px;
+  transition: color .15s;
+}
+
+.icon-btn:hover { color: white; }
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chat-messages::-webkit-scrollbar { width: 4px; }
+.chat-messages::-webkit-scrollbar-thumb { background: rgba(167,139,250,.3); border-radius: 2px; }
+
+.msg {
+  max-width: 86%;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  animation: msgIn .2s ease;
+}
+
+@keyframes msgIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.msg.kira {
+  background: rgba(124,58,237,.22);
+  border: 1px solid rgba(167,139,250,.2);
+  color: #e2d9f3;
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+
+.msg.user {
+  background: rgba(167,139,250,.18);
+  border: 1px solid rgba(167,139,250,.28);
+  color: white;
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+}
+
+.msg.thinking {
+  color: rgba(167,139,250,.65);
+  font-style: italic;
+  font-size: 12px;
+  background: none;
+  border: none;
+  padding: 4px 12px;
+}
+
+.chat-input-wrap {
+  display: flex;
+  padding: 12px;
+  gap: 8px;
+  border-top: 1px solid rgba(167,139,250,.2);
+  flex-shrink: 0;
+}
+
+#chatInput {
+  flex: 1;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(167,139,250,.28);
+  border-radius: 20px;
+  padding: 8px 14px;
+  color: white;
+  font-size: 13px;
+  outline: none;
+  transition: border-color .2s;
+}
+
+#chatInput:focus { border-color: rgba(167,139,250,.6); }
+#chatInput::placeholder { color: rgba(255,255,255,.28); }
+
+#chatSend {
+  background: #7c3aed;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background .2s;
+  flex-shrink: 0;
+}
+
+#chatSend:hover { background: #6d28d9; }
+
+/* ---- Goals panel ---- */
+.goals-panel {
   position: absolute;
-  top: 20px;
-  left: 20px;
+  bottom: 90px;
+  right: 280px;
+  width: 280px;
+  background: rgba(12,10,38,.93);
+  border: 1px solid rgba(167,139,250,.28);
+  border-radius: 18px;
+  backdrop-filter: blur(22px);
+  box-shadow: 0 8px 40px rgba(0,0,0,.55);
+  overflow: hidden;
+  z-index: 20;
 }
 
-#player2-score {
-  position: absolute;
-  top: 20px;
-  right: 20px;
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(167,139,250,.2);
+  color: #a78bfa;
+  font-size: 14px;
+  font-weight: 600;
 }
-*/
+
+.goals-list {
+  padding: 12px;
+  max-height: 220px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.goals-list::-webkit-scrollbar { width: 4px; }
+.goals-list::-webkit-scrollbar-thumb { background: rgba(167,139,250,.3); border-radius: 2px; }
+
+.goal-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(255,255,255,.82);
+  font-size: 13px;
+  padding: 7px 10px;
+  border-radius: 9px;
+  background: rgba(255,255,255,.05);
+}
+
+.goal-item input[type="checkbox"] { accent-color: #7c3aed; cursor: pointer; flex-shrink: 0; }
+.goal-item.done span { text-decoration: line-through; opacity: .45; }
+
+.goal-item .del-goal {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,.2);
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1;
+  padding: 0 2px;
+  transition: color .15s;
+  flex-shrink: 0;
+}
+
+.goal-item .del-goal:hover { color: #f87171; }
+
+.empty-goals {
+  color: rgba(255,255,255,.3);
+  font-size: 13px;
+  text-align: center;
+  padding: 18px 0;
+}
+
+.goals-add {
+  display: flex;
+  padding: 12px;
+  gap: 8px;
+  border-top: 1px solid rgba(167,139,250,.2);
+}
+
+.goals-add input {
+  flex: 1;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(167,139,250,.28);
+  border-radius: 9px;
+  padding: 7px 12px;
+  color: white;
+  font-size: 13px;
+  outline: none;
+}
+
+.goals-add input::placeholder { color: rgba(255,255,255,.28); }
+
+.goals-add button {
+  background: #7c3aed;
+  border: none;
+  border-radius: 9px;
+  width: 32px;
+  height: 32px;
+  color: white;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background .2s;
+  flex-shrink: 0;
+}
+
+.goals-add button:hover { background: #6d28d9; }
+
+/* ---- Toolbar ---- */
+.toolbar {
+  position: absolute;
+  bottom: 22px;
+  right: 90px;
+  display: flex;
+  gap: 6px;
+  background: rgba(12,10,38,.88);
+  border: 1px solid rgba(167,139,250,.2);
+  border-radius: 50px;
+  padding: 8px 14px;
+  backdrop-filter: blur(18px);
+  z-index: 30;
+}
+
+.tool-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  opacity: .65;
+  transition: opacity .2s, transform .2s;
+  padding: 4px 8px;
+}
+
+.tool-btn:hover { opacity: 1; transform: scale(1.12); }
+
+/* ---- Settings modal ---- */
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(5px);
+  z-index: 50;
+}
+
+.modal {
+  background: #1a1745;
+  border: 1px solid rgba(167,139,250,.4);
+  border-radius: 18px;
+  padding: 26px;
+  width: 330px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 12px 50px rgba(0,0,0,.5);
+}
+
+.modal h3 { color: #a78bfa; font-size: 16px; }
+
+.modal label {
+  color: rgba(255,255,255,.55);
+  font-size: 12px;
+  margin-bottom: -6px;
+}
+
+.modal input {
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(167,139,250,.3);
+  border-radius: 9px;
+  padding: 9px 13px;
+  color: white;
+  font-size: 13px;
+  outline: none;
+  width: 100%;
+  transition: border-color .2s;
+}
+
+.modal input:focus { border-color: rgba(167,139,250,.65); }
+.modal small { color: rgba(255,255,255,.28); font-size: 11px; }
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.modal-actions button {
+  padding: 8px 20px;
+  border-radius: 9px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background .2s;
+}
+
+#settingsSave   { background: #7c3aed; color: white; }
+#settingsSave:hover { background: #6d28d9; }
+#settingsCancel { background: rgba(255,255,255,.1); color: white; }
+#settingsCancel:hover { background: rgba(255,255,255,.15); }
+
+/* ---- Toast ---- */
+.toast {
+  position: absolute;
+  top: 22px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-70px);
+  background: rgba(124,58,237,.9);
+  color: white;
+  padding: 10px 22px;
+  border-radius: 24px;
+  font-size: 13px;
+  transition: transform .3s;
+  pointer-events: none;
+  backdrop-filter: blur(12px);
+  z-index: 60;
+}
+
+.toast.show { transform: translateX(-50%) translateY(0); }
