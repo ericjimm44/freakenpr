@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Kira — AI Companion</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+
+    <!-- ===== CAT PANEL (top) ===== -->
+    <div id="right-panel">
+      <div id="speech-bubble" class="hidden">
+        <span id="speech-text"></span>
+      </div>
+
+      <div id="cat-wrap">
+        <img id="cat-sprite" src="assets/frames/idle_0.png" alt="Kira"/>
+      </div>
+
+      <div id="cat-name">Kira</div>
+
+      <div id="toolbar">
+        <button class="tool" id="btn-chat"     title="Chat">💬</button>
+        <button class="tool" id="btn-tasks"    title="Tasks">📋</button>
+        <button class="tool" id="btn-settings" title="Settings">⚙️</button>
+      </div>
+    </div>
+
+    <!-- ===== CONTENT PANEL (bottom) ===== -->
+    <div id="left-panel" class="hidden">
+
+      <div id="panel-handle"></div>
+
+      <!-- Tab bar -->
+      <div id="tabs">
+        <button class="tab active" data-tab="chat">💬 Chat</button>
+        <button class="tab"        data-tab="tasks">📋 Tasks</button>
+        <button class="tab"        data-tab="settings">⚙️ Settings</button>
+      </div>
+
+      <!-- Chat tab -->
+      <div id="tab-chat" class="tab-pane active">
+        <div id="chat-messages"></div>
+        <div id="chat-input-row">
+          <input id="chat-input" type="text" placeholder="Talk to Kira…" autocomplete="off" enterkeyhint="send"/>
+          <button id="chat-send">→</button>
+        </div>
+      </div>
+
+      <!-- Tasks tab -->
+      <div id="tab-tasks" class="tab-pane hidden">
+        <div id="task-list"></div>
+        <div id="task-add-row">
+          <input id="task-input" type="text" placeholder="Add a task…" autocomplete="off" enterkeyhint="done"/>
+          <button id="task-add">+</button>
+        </div>
+      </div>
+
+      <!-- Settings tab -->
+      <div id="tab-settings" class="tab-pane hidden">
+        <div class="setting-group">
+          <label>Your name</label>
+          <input id="s-name" type="text" placeholder="What should Kira call you?"/>
+        </div>
+        <div class="setting-group">
+          <label>Claude API Key</label>
+          <input id="s-apikey" type="password" placeholder="sk-ant-…" autocomplete="off"/>
+          <small>Stored in your browser only.<br>
+                 Enables real AI responses via Claude.</small>
+        </div>
+        <button id="s-save">Save settings</button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div id="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
