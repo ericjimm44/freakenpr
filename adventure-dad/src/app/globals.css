@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  @apply bg-parchment text-ink font-body antialiased;
+  background-image:
+    radial-gradient(rgba(44, 38, 32, 0.03) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+/* Keep the app feeling like a phone-first product on big screens. */
+.app-shell {
+  @apply mx-auto min-h-screen w-full max-w-md bg-parchment;
+  box-shadow: 0 0 80px -30px rgba(44, 38, 32, 0.35);
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-ink/10 bg-cream/70 shadow-card;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-3
+           text-sm font-semibold transition active:scale-[0.97]
+           disabled:opacity-40 disabled:pointer-events-none;
+  }
+  .btn-primary {
+    @apply btn bg-forest text-parchment hover:bg-forest-light shadow-card;
+  }
+  .btn-sun {
+    @apply btn bg-sunset text-parchment hover:bg-sunset-light shadow-card;
+  }
+  .btn-ghost {
+    @apply btn border border-ink/15 bg-transparent text-ink hover:bg-ink/5;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full border border-ink/10
+           bg-parchment px-3 py-1 text-xs font-medium;
+  }
+  .label {
+    @apply text-xs font-semibold uppercase tracking-wide text-ink/50;
+  }
+  .input {
+    @apply w-full rounded-xl border border-ink/15 bg-parchment px-4 py-3 text-sm
+           outline-none focus:border-forest focus:ring-2 focus:ring-forest/20;
+  }
+}
+
+/* Hide scrollbars on horizontal rails but keep them functional. */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
