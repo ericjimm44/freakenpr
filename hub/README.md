@@ -58,6 +58,22 @@ Once GitHub Pages is enabled it's also live at
 The **Roadmap** and **Mission Board** use the project marked `"featured": true`
 (or the first project that has a `roadmap`).
 
+## Where the stats come from
+
+The numbers in `data.json` are derived from this repo's real activity (as of the
+last update), not placeholders:
+
+- **Projects** — the actual builds in the repo (Ping Pong Game, Vibe Coding Hub).
+- **Top Languages** — each language's share of tracked lines of code
+  (`git ls-files "*.js" | xargs wc -l`, etc.).
+- **Activity Feed** — the most recent real commits.
+- **Streak / active days** — distinct calendar days with commits.
+- **Builder XP** — a transparent formula:
+  `XP = commits×50 + completedProjects×200 + activeDays×25`. Level goes up every
+  1000 XP.
+
+To refresh them later, re-run those git counts and edit `data.json`.
+
 ## Auto-discovery from GitHub
 
 On load the hub queries the public GitHub API for the repo's branches. Any branch
