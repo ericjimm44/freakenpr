@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vibe Coding Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <!-- ============ LEFT SIDEBAR ============ -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-logo">vibe</span>
+        <span class="brand-sub">CODING HUB</span>
+      </div>
+
+      <nav class="nav">
+        <a class="nav-item active"><span class="nav-ico">🏠</span> Dashboard</a>
+        <a class="nav-item"><span class="nav-ico">📁</span> Projects</a>
+        <a class="nav-item"><span class="nav-ico">🎯</span> Quests</a>
+        <a class="nav-item"><span class="nav-ico">📈</span> Timeline</a>
+        <a class="nav-item"><span class="nav-ico">✂️</span> Snippets</a>
+        <a class="nav-item"><span class="nav-ico">🤖</span> AI Tools</a>
+        <a class="nav-item"><span class="nav-ico">🧩</span> Templates</a>
+        <a class="nav-item"><span class="nav-ico">🏆</span> Achievements</a>
+        <a class="nav-item"><span class="nav-ico">💬</span> Community</a>
+        <a class="nav-item"><span class="nav-ico">⚙️</span> Settings</a>
+      </nav>
+
+      <div class="profile-card" id="profile-card"></div>
+    </aside>
+
+    <!-- ============ MAIN COLUMN ============ -->
+    <main class="main">
+      <header class="greeting">
+        <div class="greeting-text">
+          <h1 id="greeting-title">Good to see you 👋</h1>
+          <p class="muted">Code. Build. Ship. Repeat.</p>
+        </div>
+        <div class="greeting-art" aria-hidden="true">🌇</div>
+      </header>
+
+      <section class="stat-row" id="stat-row"></section>
+
+      <section class="block">
+        <div class="block-head">
+          <h2>Your Projects</h2>
+          <span class="link-muted">View all projects ▸</span>
+        </div>
+        <div class="project-grid" id="project-grid">
+          <p class="loading">Loading projects…</p>
+        </div>
+      </section>
+
+      <section class="block">
+        <div class="block-head">
+          <h2>Project Roadmap: <span id="roadmap-project" class="accent"></span></h2>
+        </div>
+        <div class="roadmap" id="roadmap"></div>
+      </section>
+
+      <section class="block">
+        <div class="block-head">
+          <h2>Mission Board</h2>
+          <span class="link-muted">View full board ▸</span>
+        </div>
+        <div class="mission-board" id="mission-board"></div>
+      </section>
+    </main>
+
+    <!-- ============ RIGHT SIDEBAR ============ -->
+    <aside class="rail">
+      <section class="panel">
+        <div class="panel-head"><h3>Builder Stats</h3><span class="link-muted">View all</span></div>
+        <div id="skills"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h3>Today's Quests</h3></div>
+        <div id="quests"></div>
+        <div class="quest-reward" id="quest-reward"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h3>Activity Feed</h3></div>
+        <div id="activity"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h3>Achievements</h3></div>
+        <div class="badge-grid" id="achievements"></div>
+      </section>
+    </aside>
+  </div>
+
+  <script src="hub.js"></script>
+</body>
+</html>

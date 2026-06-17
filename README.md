@@ -1,3 +1,10 @@
+# Freakenpr
+
+A collection of vibe-coded projects. See them all — and their progress — in the
+**[Vibe Projects Hub](hub/)** (`hub/index.html`).
+
+---
+
 # Ping Pong Game
 
 A simple implementation of the classic Ping Pong game using HTML, CSS, and JavaScript.
