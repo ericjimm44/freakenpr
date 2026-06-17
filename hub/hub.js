@@ -7,6 +7,8 @@ const STATUS_LABEL = {
 
 let allProjects = [];
 let activeFilter = 'all';
+let searchTerm = '';
+let sortBy = 'updated';
 
 async function loadProjects() {
   let data;
@@ -93,6 +95,38 @@ function renderStats() {
   document.getElementById('stat-progress').textContent = inProgress;
   document.getElementById('stat-completed').textContent = completed;
   document.getElementById('stat-avg').textContent = avg + '%';
+
+  document.getElementById('overall-pct').textContent = avg + '%';
+  const fill = document.getElementById('overall-fill');
+  fill.style.setProperty('--target', avg + '%');
+  requestAnimationFrame(() => { fill.style.width = avg + '%'; });
+}
+
+// Apply the active filter, search term and sort order to the project list.
+function visibleProjects() {
+  let list = allProjects.filter(p =>
+    activeFilter === 'all' ? true : p.status === activeFilter
+  );
+
+  if (searchTerm) {
+    const q = searchTerm.toLowerCase();
+    list = list.filter(p => {
+      const haystack = [
+        p.name, p.description, (p.tags || []).join(' ')
+      ].join(' ').toLowerCase();
+      return haystack.includes(q);
+    });
+  }
+
+  const byProgress = p => Number(p.progress) || 0;
+  const sorters = {
+    'updated': (a, b) => String(b.updated || '').localeCompare(String(a.updated || '')),
+    'progress-desc': (a, b) => byProgress(b) - byProgress(a),
+    'progress-asc': (a, b) => byProgress(a) - byProgress(b),
+    'name': (a, b) => String(a.name || '').localeCompare(String(b.name || '')),
+    'status': (a, b) => String(a.status || '').localeCompare(String(b.status || ''))
+  };
+  return list.slice().sort(sorters[sortBy] || sorters['updated']);
 }
 
 function projectCard(p) {
@@ -131,12 +165,13 @@ function projectCard(p) {
 
 function renderProjects() {
   const container = document.getElementById('projects');
-  const list = allProjects.filter(p =>
-    activeFilter === 'all' ? true : p.status === activeFilter
-  );
+  const list = visibleProjects();
 
   if (!list.length) {
-    container.innerHTML = `<p class="loading">No projects in this view yet.</p>`;
+    const msg = searchTerm
+      ? `No projects match “${escapeHtml(searchTerm)}”.`
+      : 'No projects in this view yet.';
+    container.innerHTML = `<p class="loading">${msg}</p>`;
     return;
   }
 
@@ -150,13 +185,23 @@ function renderProjects() {
   });
 }
 
-function setupFilters() {
+function setupControls() {
   document.getElementById('filters').addEventListener('click', e => {
     const btn = e.target.closest('.filter-btn');
     if (!btn) return;
     activeFilter = btn.dataset.filter;
     document.querySelectorAll('.filter-btn').forEach(b =>
       b.classList.toggle('active', b === btn));
+    renderProjects();
+  });
+
+  document.getElementById('search').addEventListener('input', e => {
+    searchTerm = e.target.value.trim();
+    renderProjects();
+  });
+
+  document.getElementById('sort').addEventListener('change', e => {
+    sortBy = e.target.value;
     renderProjects();
   });
 }
@@ -168,5 +213,5 @@ function escapeHtml(str) {
 }
 function escapeAttr(str) { return escapeHtml(str); }
 
-setupFilters();
+setupControls();
 loadProjects();

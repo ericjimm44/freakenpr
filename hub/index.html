@@ -10,6 +10,14 @@
   <header class="hub-header">
     <h1>🚀 Vibe Projects Hub</h1>
     <p class="tagline">Everything we're vibe-coding — what's shipped and what's still cooking.</p>
+    <div class="overall">
+      <div class="overall-meta">
+        <span>Overall progress</span><span id="overall-pct">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="overall-fill" style="--target:0%"></div>
+      </div>
+    </div>
   </header>
 
   <section class="stats" id="stats">
@@ -30,6 +38,20 @@
       <span class="stat-label">Avg Progress</span>
     </div>
   </section>
+
+  <div class="controls">
+    <input type="search" id="search" class="search" placeholder="🔍 Search projects, tags…" autocomplete="off">
+    <label class="sort-label">
+      Sort
+      <select id="sort" class="sort">
+        <option value="updated">Recently updated</option>
+        <option value="progress-desc">Progress: high → low</option>
+        <option value="progress-asc">Progress: low → high</option>
+        <option value="name">Name A → Z</option>
+        <option value="status">Status</option>
+      </select>
+    </label>
+  </div>
 
   <nav class="filters" id="filters">
     <button class="filter-btn active" data-filter="all">All</button>
