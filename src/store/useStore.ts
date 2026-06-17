@@ -4,6 +4,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type {
   AppState,
+  Child,
   Family,
   Mission,
   MissionDebrief,
@@ -29,6 +30,13 @@ interface StoreActions {
   // family
   createFamily: (family: Family) => void;
   updateFamily: (patch: Partial<Family>) => void;
+  addChild: (child: Child) => void;
+  updateChild: (id: string, patch: Partial<Child>) => void;
+  removeChild: (id: string) => void;
+
+  // data portability (stand-in for cloud sync until Supabase is wired)
+  exportData: () => string;
+  importData: (json: string) => boolean;
 
   // missions
   addMissionFromSuggestion: (
@@ -40,6 +48,8 @@ interface StoreActions {
       Partial<Pick<Mission, "status">>
   ) => Mission;
   updateMission: (id: string, patch: Partial<Mission>) => void;
+  startMission: (id: string) => void;
+  deleteMission: (id: string) => void;
   toggleChallenge: (missionId: string, challengeId: string) => void;
   addPhoto: (missionId: string, photo: Photo) => void;
   removePhoto: (missionId: string, photoId: string) => void;
@@ -73,6 +83,66 @@ export const useStore = create<Store>()(
 
       updateFamily: (patch) =>
         set((s) => (s.family ? { family: { ...s.family, ...patch } } : {})),
+
+      addChild: (child) =>
+        set((s) =>
+          s.family
+            ? { family: { ...s.family, children: [...s.family.children, child] } }
+            : {}
+        ),
+
+      updateChild: (id, patch) =>
+        set((s) =>
+          s.family
+            ? {
+                family: {
+                  ...s.family,
+                  children: s.family.children.map((c) =>
+                    c.id === id ? { ...c, ...patch } : c
+                  ),
+                },
+              }
+            : {}
+        ),
+
+      removeChild: (id) =>
+        set((s) =>
+          s.family
+            ? {
+                family: {
+                  ...s.family,
+                  children: s.family.children.filter((c) => c.id !== id),
+                },
+              }
+            : {}
+        ),
+
+      exportData: () => {
+        const { family, missions, achievements, onboarded } = get();
+        return JSON.stringify(
+          { version: 1, exportedAt: new Date().toISOString(), family, missions, achievements, onboarded },
+          null,
+          2
+        );
+      },
+
+      importData: (json) => {
+        try {
+          const data = JSON.parse(json);
+          if (!data || typeof data !== "object" || !("missions" in data)) return false;
+          const missions: Mission[] = Array.isArray(data.missions) ? data.missions : [];
+          const { achievements } = recompute(missions, data.achievements ?? []);
+          set({
+            family: data.family ?? null,
+            missions,
+            achievements,
+            onboarded: Boolean(data.family),
+          });
+          return true;
+        } catch {
+          return false;
+        }
+      },
 
       addMissionFromSuggestion: (sug, opts) => {
         const family = get().family;
@@ -121,6 +191,20 @@ export const useStore = create<Store>()(
         set((s) => ({
           missions: s.missions.map((m) => (m.id === id ? { ...m, ...patch } : m)),
         })),
+
+      startMission: (id) =>
+        set((s) => ({
+          missions: s.missions.map((m) =>
+            m.id === id ? { ...m, status: "active" } : m
+          ),
+        })),
+
+      deleteMission: (id) =>
+        set((s) => {
+          const missions = s.missions.filter((m) => m.id !== id);
+          const { achievements } = recompute(missions, s.achievements);
+          return { missions, achievements };
+        }),
 
       toggleChallenge: (missionId, challengeId) =>
         set((s) => ({

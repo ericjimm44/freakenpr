@@ -338,6 +338,64 @@ export function generateLore(family: Family, missions: Mission[]): FamilyLore {
   return { headline, paragraphs, stats, runningJokes };
 }
 
+export interface AnnualRecap {
+  year: number;
+  headline: string;
+  highlights: string[];
+  topMissionTitle?: string;
+  missionCount: number;
+  stateCount: number;
+  photoCount: number;
+}
+
+/** "Year in Adventures" — an annual family recap (Phase 3). */
+export function generateAnnualRecap(
+  family: Family,
+  missions: Mission[],
+  year: number
+): AnnualRecap {
+  const inYear = missions.filter(
+    (m) =>
+      m.status === "completed" &&
+      m.completedAt &&
+      new Date(m.completedAt).getFullYear() === year
+  );
+  const states = Array.from(new Set(inYear.map((m) => m.state).filter(Boolean)));
+  const photoCount = inYear.reduce((s, m) => s + m.photos.length, 0);
+  const top = [...inYear].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))[0];
+
+  const highlights: string[] = [];
+  if (top)
+    highlights.push(
+      `Your top adventure was ${top.title} (${(top.rating ?? 0).toFixed(1)}/10).`
+    );
+  family.children.forEach((child) => {
+    let best: { title: string; rating: number } | null = null;
+    for (const m of inYear) {
+      const r = m.childRatings.find((cr) => cr.childId === child.id);
+      if (r && (!best || r.rating > best.rating)) best = { title: m.title, rating: r.rating };
+    }
+    if (best) highlights.push(`${child.name}'s favorite was ${best.title}.`);
+  });
+  const funniest = inYear.map((m) => m.debrief?.funniestMoment).find(Boolean);
+  if (funniest) highlights.push(`The laugh of the year: ${funniest}`);
+
+  return {
+    year,
+    headline:
+      inYear.length === 0
+        ? `${year} is a blank page — time to start writing it.`
+        : `In ${year}, ${family.surname} completed ${inYear.length} mission${
+            inYear.length === 1 ? "" : "s"
+          } across ${states.length} state${states.length === 1 ? "" : "s"}.`,
+    highlights,
+    topMissionTitle: top?.title,
+    missionCount: inYear.length,
+    stateCount: states.length,
+    photoCount,
+  };
+}
+
 /** Anticipation teaser for the next mission, shown on the dashboard. */
 export function teaseNextMission(suggestion: MissionSuggestion | undefined): string {
   if (!suggestion) return "Your next adventure is being charted…";

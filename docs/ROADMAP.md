@@ -30,8 +30,19 @@ Status against the spec's build order. ✅ implemented in this demo ·
 |-------------------------------|--------|--------------------------------|
 | Family Lore Engine            | ✅     | `aiEngine.generateLore`, `/lore` |
 | Personalized Recommendations  | ✅     | interest/history-weighted ranker |
-| AI Story Generation           | ✅🔌   | `/api/ai/recap` (OpenAI seam)  |
-| Annual Family Adventure Recap | 📋     | yearly `generateLore` snapshot |
+| AI Story Generation           | ✅🔌   | `/api/ai/recap` (OpenAI seam, wired into completion) |
+| Annual Family Adventure Recap | ✅     | `aiEngine.generateAnnualRecap`, `/lore` "Year in Adventures" |
+
+## Product depth (this iteration)
+
+| Item                          | Status | Where                          |
+|-------------------------------|--------|--------------------------------|
+| Mission lifecycle (start / edit / delete) | ✅ | `/missions/[id]`, store actions |
+| Post-onboarding family + child editing | ✅ | `/family`, `ChildEditorSheet`  |
+| Data export / import (backup)  | ✅     | `/family`, `store.export/importData` |
+| Installable PWA                | ✅     | `app/manifest.ts`, `app/icon.svg` |
+| Error / not-found / loading states | ✅ | `app/error.tsx` etc.           |
+| Automated test suite           | ✅     | 32 tests — `npm test` (engines + store + render) |
 
 ## Production hardening (post-MVP)
 

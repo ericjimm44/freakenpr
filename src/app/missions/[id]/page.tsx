@@ -10,6 +10,7 @@ import { DebriefSheet } from "@/components/DebriefSheet";
 import { Celebration } from "@/components/Celebration";
 import { categoryMeta } from "@/lib/categories";
 import { computeMemoryScore } from "@/lib/memoryScore";
+import { fetchRecap } from "@/lib/aiClient";
 import { COLOR_HEX, formatDate, uid, cx } from "@/lib/utils";
 import type { Achievement, MissionDebrief } from "@/lib/types";
 
@@ -23,8 +24,12 @@ function MissionDetailInner() {
   const addPhoto = useStore((s) => s.addPhoto);
   const removePhoto = useStore((s) => s.removePhoto);
   const completeMission = useStore((s) => s.completeMission);
+  const updateMission = useStore((s) => s.updateMission);
+  const startMission = useStore((s) => s.startMission);
+  const deleteMission = useStore((s) => s.deleteMission);
 
   const [debriefOpen, setDebriefOpen] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [celebrate, setCelebrate] = useState<{
     recap: string;
     gain: number;
@@ -67,10 +72,21 @@ function MissionDetailInner() {
     const badges = completeMission(mission.id, data);
     const afterMissions = useStore.getState().missions;
     const after = computeMemoryScore(afterMissions, family).total;
-    const recap =
-      useStore.getState().missions.find((m) => m.id === mission.id)?.aiSummary ?? "";
+    const completed = afterMissions.find((m) => m.id === mission.id);
+    const recap = completed?.aiSummary ?? "";
     setDebriefOpen(false);
     setCelebrate({ recap, gain: Math.max(0, after - before), badges });
+
+    // Upgrade the recap via the AI route (OpenAI when keyed; local fallback
+    // otherwise). Non-blocking — the celebration already shows a recap.
+    if (completed) {
+      fetchRecap(completed, family).then((enhanced) => {
+        if (enhanced && enhanced !== recap) {
+          updateMission(mission.id, { aiSummary: enhanced });
+          setCelebrate((c) => (c ? { ...c, recap: enhanced } : c));
+        }
+      });
+    }
   };
 
   const childRatingFor = (childId: string) =>
@@ -94,6 +110,13 @@ function MissionDetailInner() {
           className="absolute left-4 top-5 grid h-9 w-9 place-items-center rounded-full bg-parchment/90 text-ink shadow-card"
         >
           <Icon name="ChevronLeft" size={18} />
+        </button>
+        <button
+          onClick={() => setConfirmDelete(true)}
+          aria-label="Delete mission"
+          className="absolute right-4 top-5 grid h-9 w-9 place-items-center rounded-full bg-parchment/90 text-clay shadow-card"
+        >
+          <Icon name="Trash2" size={17} />
         </button>
         <div className="absolute bottom-4 left-5 right-5 text-parchment">
           <span className="chip bg-parchment/90 text-ink" style={{ color: accent }}>
@@ -279,10 +302,47 @@ function MissionDetailInner() {
 
       {/* Complete CTA */}
       {!done && (
-        <div className="fixed bottom-0 left-1/2 z-20 w-full max-w-md -translate-x-1/2 border-t border-ink/10 bg-parchment/95 p-4 backdrop-blur">
-          <button onClick={() => setDebriefOpen(true)} className="btn-sun w-full">
-            <Icon name="Flag" size={16} /> Complete &amp; debrief mission
+        <div className="fixed bottom-0 left-1/2 z-20 flex w-full max-w-md -translate-x-1/2 gap-2 border-t border-ink/10 bg-parchment/95 p-4 backdrop-blur">
+          {mission.status === "planned" && (
+            <button
+              onClick={() => startMission(mission.id)}
+              className="btn-ghost shrink-0"
+            >
+              <Icon name="Play" size={15} /> Start
+            </button>
+          )}
+          <button onClick={() => setDebriefOpen(true)} className="btn-sun flex-1">
+            <Icon name="Flag" size={16} /> Complete &amp; debrief
           </button>
+        </div>
+      )}
+
+      {/* Delete confirm */}
+      {confirmDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 p-6 backdrop-blur-sm">
+          <div className="card w-full max-w-xs animate-pop-in bg-parchment p-5 text-center">
+            <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-clay/15 text-clay">
+              <Icon name="Trash2" size={22} />
+            </span>
+            <p className="mt-3 font-display text-lg font-bold">Delete {mission.code}?</p>
+            <p className="mt-1 text-xs text-ink/55">
+              This removes the mission and its memories. This can&apos;t be undone.
+            </p>
+            <div className="mt-4 flex gap-2">
+              <button onClick={() => setConfirmDelete(false)} className="btn-ghost flex-1">
+                Keep
+              </button>
+              <button
+                onClick={() => {
+                  deleteMission(mission.id);
+                  router.replace("/missions");
+                }}
+                className="btn flex-1 bg-clay text-parchment"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

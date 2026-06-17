@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { useStore } from "@/store/useStore";
 import { AppFrame } from "@/components/AppFrame";
 import { Icon } from "@/components/Icon";
-import { generateLore } from "@/lib/aiEngine";
+import { generateLore, generateAnnualRecap } from "@/lib/aiEngine";
 import { cx, formatDate } from "@/lib/utils";
 
 function LoreInner() {
@@ -13,6 +13,11 @@ function LoreInner() {
   const achievements = useStore((s) => s.achievements);
 
   const lore = useMemo(() => generateLore(family, missions), [family, missions]);
+  const year = new Date().getFullYear();
+  const annual = useMemo(
+    () => generateAnnualRecap(family, missions, year),
+    [family, missions, year]
+  );
   const earned = achievements.filter((a) => a.earnedAt);
   const locked = achievements.filter((a) => !a.earnedAt);
 
@@ -56,6 +61,42 @@ function LoreInner() {
                 <p className="text-sm text-ink/80">{j}</p>
               </div>
             ))}
+          </div>
+        </section>
+      )}
+
+      {/* Year in Adventures */}
+      {annual.missionCount > 0 && (
+        <section className="mt-7">
+          <h2 className="font-display text-lg font-bold">Year in Adventures · {year}</h2>
+          <div className="mt-3 overflow-hidden rounded-3xl bg-forest p-6 text-parchment shadow-card">
+            <div className="flex items-center gap-2 text-gold-light">
+              <Icon name="Sparkles" size={16} />
+              <span className="text-xs font-bold uppercase tracking-wide">Annual recap</span>
+            </div>
+            <p className="mt-2 font-display text-xl font-bold leading-snug">{annual.headline}</p>
+            <div className="mt-4 grid grid-cols-3 gap-2 text-center">
+              {[
+                ["Missions", annual.missionCount],
+                ["States", annual.stateCount],
+                ["Photos", annual.photoCount],
+              ].map(([label, value]) => (
+                <div key={label} className="rounded-xl bg-parchment/10 py-2">
+                  <p className="font-display text-2xl font-black">{value}</p>
+                  <p className="text-[10px] uppercase tracking-wide text-parchment/70">{label}</p>
+                </div>
+              ))}
+            </div>
+            {annual.highlights.length > 0 && (
+              <ul className="mt-4 space-y-1.5">
+                {annual.highlights.map((h, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-parchment/90">
+                    <Icon name="Star" size={14} className="mt-0.5 shrink-0 fill-gold text-gold" />
+                    {h}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </section>
       )}

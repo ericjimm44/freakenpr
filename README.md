@@ -25,10 +25,15 @@ OpenAI, Mapbox) is architected behind a seam and lights up by adding env keys.
 ```bash
 npm install
 npm run dev          # → http://localhost:3000
+npm test             # 32 unit + store-integration + page-render tests
+npm run build        # production build (14 routes)
 ```
 
 On first load, tap **"Explore the Martinez family demo"** to see a living family
 story, or build your own family from scratch.
+
+Installable as a **PWA** (web manifest + app icon + standalone display) so
+families can add it to their home screen like a native app.
 
 ---
 

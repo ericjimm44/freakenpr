@@ -12,12 +12,19 @@ const body = Nunito_Sans({
   subsets: ["latin"],
   weight: ["400", "600", "700", "800"],
   variable: "--font-body",
+  adjustFontFallback: false,
 });
 
 export const metadata: Metadata = {
   title: "Adventure Dad — Create memories on purpose",
   description:
     "Mission-based family adventures that turn free time into a story your kids will never forget.",
+  applicationName: "Adventure Dad",
+  appleWebApp: {
+    capable: true,
+    title: "Adventure Dad",
+    statusBarStyle: "default",
+  },
 };
 
 export const viewport: Viewport = {
