@@ -1,0 +1,99 @@
+{
+  "github": {
+    "owner": "ericjimm44",
+    "repo": "freakenpr",
+    "autoDiscover": true,
+    "ignoreBranches": ["main", "master", "gh-pages"]
+  },
+  "builder": {
+    "name": "Jimmy",
+    "handle": "jimmy.dev",
+    "title": "Indie Builder",
+    "level": 12,
+    "xp": 4220,
+    "xpMax": 6000,
+    "streak": 14
+  },
+  "skills": [
+    { "name": "Frontend", "value": 82, "color": "#7c5cff" },
+    { "name": "Backend", "value": 64, "color": "#2ec26b" },
+    { "name": "Design", "value": 64, "color": "#ff8a3d" },
+    { "name": "AI Prompting", "value": 75, "color": "#3db4ff" },
+    { "name": "DevOps", "value": 48, "color": "#ff5c8a" }
+  ],
+  "quests": [
+    { "label": "Code for 30 minutes", "reward": 30, "progress": 30, "goal": 30 },
+    { "label": "Complete 1 feature", "reward": 50, "progress": 0, "goal": 1 },
+    { "label": "Push code to repo", "reward": 20, "progress": 0, "goal": 1 },
+    { "label": "Test app on mobile", "reward": 15, "progress": 0, "goal": 1 }
+  ],
+  "questReward": { "xp": 75, "bonus": "+1 Streak Day" },
+  "activity": [
+    { "icon": "✅", "text": "Added Trip Planner Module", "time": "2h ago" },
+    { "icon": "🎨", "text": "Generated AI assets", "time": "5h ago" },
+    { "icon": "🗄️", "text": "Finished Database Setup", "time": "1d ago" },
+    { "icon": "🚀", "text": "Pushed to GitHub", "time": "1d ago" },
+    { "icon": "🌿", "text": "Created branch feature/auth", "time": "2d ago" }
+  ],
+  "achievements": [
+    { "icon": "🏁", "name": "First Commit", "unlocked": true },
+    { "icon": "🔥", "name": "Streak Master", "unlocked": true },
+    { "icon": "🐞", "name": "Bug Slayer", "unlocked": true },
+    { "icon": "🐤", "name": "Early Bird", "unlocked": false }
+  ],
+  "projects": [
+    {
+      "name": "Adventure Dad",
+      "description": "Family memories, reimagined.",
+      "status": "in-progress",
+      "progress": 72,
+      "cover": "linear-gradient(135deg,#f7971e,#ffd200)",
+      "nextUp": "Add Trip Planner Module",
+      "featured": true,
+      "tags": ["mobile", "ai"],
+      "roadmap": [
+        { "stage": "Idea", "state": "complete" },
+        { "stage": "Wireframe", "state": "complete" },
+        { "stage": "MVP", "state": "in-progress" },
+        { "stage": "Beta", "state": "locked" },
+        { "stage": "Launch", "state": "locked" },
+        { "stage": "Scale", "state": "locked" }
+      ],
+      "missions": [
+        { "name": "Project Setup", "progress": 100 },
+        { "name": "Build Authentication", "progress": 75 },
+        { "name": "Trip Planner Feature", "progress": 30 }
+      ]
+    },
+    {
+      "name": "SwingVision Clone",
+      "description": "AI Tennis Performance Analyzer.",
+      "status": "in-progress",
+      "progress": 24,
+      "cover": "linear-gradient(135deg,#11998e,#38ef7d)",
+      "nextUp": "Upload Video Processing",
+      "tags": ["ai", "video"]
+    },
+    {
+      "name": "AI Study Buddy",
+      "description": "Your intelligent learning companion.",
+      "status": "in-progress",
+      "progress": 48,
+      "cover": "linear-gradient(135deg,#8e2de2,#4a00e0)",
+      "nextUp": "Chat Memory System",
+      "tags": ["ai", "education"]
+    },
+    {
+      "name": "Ping Pong Game",
+      "description": "Classic two-player Pong in vanilla JS.",
+      "status": "completed",
+      "progress": 100,
+      "cover": "linear-gradient(135deg,#2193b0,#6dd5ed)",
+      "nextUp": "Shipped 🎉",
+      "branch": "ping-pong-game",
+      "link": "../index.html",
+      "repo": "https://github.com/ericjimm44/freakenpr/tree/ping-pong-game",
+      "tags": ["game", "javascript"]
+    }
+  ]
+}

@@ -3,69 +3,99 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vibe Projects Hub</title>
+  <title>Vibe Coding Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="hub-header">
-    <h1>🚀 Vibe Projects Hub</h1>
-    <p class="tagline">Everything we're vibe-coding — what's shipped and what's still cooking.</p>
-    <div class="overall">
-      <div class="overall-meta">
-        <span>Overall progress</span><span id="overall-pct">0%</span>
+  <div class="app">
+    <!-- ============ LEFT SIDEBAR ============ -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-logo">vibe</span>
+        <span class="brand-sub">CODING HUB</span>
       </div>
-      <div class="progress-track">
-        <div class="progress-fill" id="overall-fill" style="--target:0%"></div>
-      </div>
-    </div>
-  </header>
 
-  <section class="stats" id="stats">
-    <div class="stat-card">
-      <span class="stat-number" id="stat-total">0</span>
-      <span class="stat-label">Total</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-number" id="stat-progress">0</span>
-      <span class="stat-label">In Progress</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-number" id="stat-completed">0</span>
-      <span class="stat-label">Completed</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-number" id="stat-avg">0%</span>
-      <span class="stat-label">Avg Progress</span>
-    </div>
-  </section>
+      <nav class="nav">
+        <a class="nav-item active"><span class="nav-ico">🏠</span> Dashboard</a>
+        <a class="nav-item"><span class="nav-ico">📁</span> Projects</a>
+        <a class="nav-item"><span class="nav-ico">🎯</span> Quests</a>
+        <a class="nav-item"><span class="nav-ico">📈</span> Timeline</a>
+        <a class="nav-item"><span class="nav-ico">✂️</span> Snippets</a>
+        <a class="nav-item"><span class="nav-ico">🤖</span> AI Tools</a>
+        <a class="nav-item"><span class="nav-ico">🧩</span> Templates</a>
+        <a class="nav-item"><span class="nav-ico">🏆</span> Achievements</a>
+        <a class="nav-item"><span class="nav-ico">💬</span> Community</a>
+        <a class="nav-item"><span class="nav-ico">⚙️</span> Settings</a>
+      </nav>
 
-  <div class="controls">
-    <input type="search" id="search" class="search" placeholder="🔍 Search projects, tags…" autocomplete="off">
-    <label class="sort-label">
-      Sort
-      <select id="sort" class="sort">
-        <option value="updated">Recently updated</option>
-        <option value="progress-desc">Progress: high → low</option>
-        <option value="progress-asc">Progress: low → high</option>
-        <option value="name">Name A → Z</option>
-        <option value="status">Status</option>
-      </select>
-    </label>
+      <div class="profile-card" id="profile-card"></div>
+    </aside>
+
+    <!-- ============ MAIN COLUMN ============ -->
+    <main class="main">
+      <header class="greeting">
+        <div class="greeting-text">
+          <h1 id="greeting-title">Good to see you 👋</h1>
+          <p class="muted">Code. Build. Ship. Repeat.</p>
+        </div>
+        <div class="greeting-art" aria-hidden="true">🌇</div>
+      </header>
+
+      <section class="stat-row" id="stat-row"></section>
+
+      <section class="block">
+        <div class="block-head">
+          <h2>Your Projects</h2>
+          <span class="link-muted">View all projects ▸</span>
+        </div>
+        <div class="project-grid" id="project-grid">
+          <p class="loading">Loading projects…</p>
+        </div>
+      </section>
+
+      <section class="block">
+        <div class="block-head">
+          <h2>Project Roadmap: <span id="roadmap-project" class="accent"></span></h2>
+        </div>
+        <div class="roadmap" id="roadmap"></div>
+      </section>
+
+      <section class="block">
+        <div class="block-head">
+          <h2>Mission Board</h2>
+          <span class="link-muted">View full board ▸</span>
+        </div>
+        <div class="mission-board" id="mission-board"></div>
+      </section>
+    </main>
+
+    <!-- ============ RIGHT SIDEBAR ============ -->
+    <aside class="rail">
+      <section class="panel">
+        <div class="panel-head"><h3>Builder Stats</h3><span class="link-muted">View all</span></div>
+        <div id="skills"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h3>Today's Quests</h3></div>
+        <div id="quests"></div>
+        <div class="quest-reward" id="quest-reward"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h3>Activity Feed</h3></div>
+        <div id="activity"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head"><h3>Achievements</h3></div>
+        <div class="badge-grid" id="achievements"></div>
+      </section>
+    </aside>
   </div>
-
-  <nav class="filters" id="filters">
-    <button class="filter-btn active" data-filter="all">All</button>
-    <button class="filter-btn" data-filter="in-progress">In Progress</button>
-    <button class="filter-btn" data-filter="completed">Completed</button>
-  </nav>
-
-  <main id="projects" class="projects-grid">
-    <p class="loading">Loading projects…</p>
-  </main>
-
-  <footer class="hub-footer">
-    <p>Add a project by editing <code>hub/projects.json</code>.</p>
-  </footer>
 
   <script src="hub.js"></script>
 </body>
