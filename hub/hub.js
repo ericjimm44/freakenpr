@@ -28,6 +28,7 @@ async function init() {
   renderActivity();
   renderAchievements();
   animateBars();
+  setupNav();
 
   if (DATA.github && DATA.github.autoDiscover) {
     const found = await discoverFromGitHub(DATA.github);
@@ -43,18 +44,24 @@ async function init() {
 /* ---------- sidebar profile ---------- */
 function renderProfile() {
   const b = DATA.builder || {};
+  const xpPct = b.xpMax ? Math.round((b.xp / b.xpMax) * 100) : 0;
   document.getElementById('profile-card').innerHTML = `
     <div class="avatar">🧑‍💻</div>
-    <div>
+    <div class="who-wrap">
       <div class="who">${esc(b.handle || b.name || 'builder')}</div>
       <div class="role">${esc(b.title || '')} · Lvl ${b.level || 1}</div>
+      <div class="xp-bar"><span data-w="${xpPct}%"></span></div>
     </div>`;
 }
 
 function renderGreeting() {
   const b = DATA.builder || {};
+  const h = new Date().getHours();
+  const part = h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
+  const art = h < 7 ? '🌅' : h < 18 ? '☀️' : '🌇';
   document.getElementById('greeting-title').textContent =
-    `Good to see you, ${b.name || 'builder'} ☀️`;
+    `${part}, ${b.name || 'builder'} ${art}`;
+  document.getElementById('greeting-art').textContent = art;
 }
 
 /* ---------- stat cards ---------- */
@@ -168,7 +175,12 @@ function renderSkills() {
 }
 
 function renderQuests() {
-  document.getElementById('quests').innerHTML = (DATA.quests || []).map(q => {
+  const quests = DATA.quests || [];
+  const completed = quests.filter(q => (q.progress || 0) >= (q.goal || 1)).length;
+  const cnt = document.getElementById('quest-progress');
+  if (cnt) cnt.textContent = quests.length ? `${completed}/${quests.length}` : '';
+
+  document.getElementById('quests').innerHTML = quests.map(q => {
     const done = (q.progress || 0) >= (q.goal || 1);
     const ratio = `${q.progress || 0}/${q.goal || 1}`;
     return `
@@ -198,11 +210,44 @@ function renderActivity() {
 }
 
 function renderAchievements() {
-  document.getElementById('achievements').innerHTML = (DATA.achievements || []).map(a => `
-    <div class="badge ${a.unlocked ? '' : 'locked'}">
+  const list = DATA.achievements || [];
+  const unlocked = list.filter(a => a.unlocked).length;
+  const cnt = document.getElementById('ach-count');
+  if (cnt) cnt.textContent = list.length ? `${unlocked}/${list.length}` : '';
+
+  document.getElementById('achievements').innerHTML = list.map(a => `
+    <div class="badge ${a.unlocked ? '' : 'locked'}" title="${esc(a.name)}${a.unlocked ? '' : ' (locked)'}">
       <div class="badge-ico">${esc(a.icon || '🏅')}</div>
       <div class="badge-name">${esc(a.name)}</div>
     </div>`).join('');
+}
+
+/* ---------- nav: smooth scroll + active-on-scroll ---------- */
+function setupNav() {
+  const items = Array.from(document.querySelectorAll('.nav-item'));
+
+  document.querySelectorAll('[data-target]').forEach(el => {
+    el.addEventListener('click', () => {
+      const target = document.getElementById(el.dataset.target);
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // Highlight the nav item whose section is in view.
+  const sections = items
+    .map(i => document.getElementById(i.dataset.target))
+    .filter(Boolean);
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const active = items.find(i => i.dataset.target === e.target.id);
+      if (!active) return;
+      items.forEach(i => i.classList.toggle('active', i === active));
+    });
+  }, { rootMargin: '-45% 0px -50% 0px' });
+
+  sections.forEach(s => observer.observe(s));
 }
 
 /* ---------- GitHub auto-discovery ---------- */
