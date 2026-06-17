@@ -9,19 +9,76 @@ let allProjects = [];
 let activeFilter = 'all';
 
 async function loadProjects() {
+  let data;
   try {
     const res = await fetch('projects.json', { cache: 'no-store' });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    allProjects = Array.isArray(data.projects) ? data.projects : [];
-    renderStats();
-    renderProjects();
+    data = await res.json();
   } catch (err) {
     document.getElementById('projects').innerHTML =
       `<p class="loading">Couldn't load projects.json (${err.message}).<br>
        If you opened this file directly, run a local server:
        <code>python3 -m http.server</code> then visit the hub URL.</p>`;
+    return;
   }
+
+  allProjects = Array.isArray(data.projects) ? data.projects : [];
+  // Show curated projects immediately, then enrich with GitHub branches.
+  renderStats();
+  renderProjects();
+
+  if (data.github && data.github.autoDiscover) {
+    const discovered = await discoverFromGitHub(data.github);
+    if (discovered.length) {
+      allProjects = allProjects.concat(discovered);
+      renderStats();
+      renderProjects();
+    }
+  }
+}
+
+// Pull branches from the GitHub REST API and turn any not already listed
+// in projects.json into auto-discovered "in progress" project cards.
+async function discoverFromGitHub(cfg) {
+  const { owner, repo } = cfg;
+  if (!owner || !repo) return [];
+  const ignore = new Set((cfg.ignoreBranches || []).map(b => b.toLowerCase()));
+  const known = new Set(
+    allProjects.map(p => (p.branch || '').toLowerCase()).filter(Boolean)
+  );
+
+  try {
+    const res = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/branches?per_page=100`,
+      { headers: { 'Accept': 'application/vnd.github+json' } }
+    );
+    if (!res.ok) throw new Error(`GitHub API ${res.status}`);
+    const branches = await res.json();
+
+    return branches
+      .map(b => b.name)
+      .filter(name => !ignore.has(name.toLowerCase()) && !known.has(name.toLowerCase()))
+      .map(name => ({
+        name: prettyBranchName(name),
+        description: `Auto-discovered from branch \`${name}\`. Add details in projects.json.`,
+        status: 'in-progress',
+        progress: 0,
+        tags: ['auto-discovered'],
+        branch: name,
+        repo: `https://github.com/${owner}/${repo}/tree/${name}`
+      }));
+  } catch (err) {
+    console.warn('Auto-discovery skipped:', err.message);
+    return [];
+  }
+}
+
+// Turn a branch like "claude/cool-thing-x1y2" into "Cool Thing".
+function prettyBranchName(branch) {
+  let s = branch.split('/').pop();
+  s = s.replace(/-[a-z0-9]{6,}$/i, '');      // drop trailing random suffix
+  s = s.replace(/[-_]+/g, ' ').trim();
+  return s.replace(/\b\w/g, c => c.toUpperCase()) || branch;
 }
 
 function renderStats() {

@@ -1,4 +1,10 @@
 {
+  "github": {
+    "owner": "ericjimm44",
+    "repo": "freakenpr",
+    "autoDiscover": true,
+    "ignoreBranches": ["main", "master", "gh-pages"]
+  },
   "projects": [
     {
       "name": "Ping Pong Game",
@@ -6,6 +12,7 @@
       "status": "completed",
       "progress": 100,
       "tags": ["game", "canvas", "javascript"],
+      "branch": "ping-pong-game",
       "link": "../index.html",
       "repo": "https://github.com/ericjimm44/freakenpr/tree/ping-pong-game",
       "updated": "2026-06-15"
@@ -16,6 +23,7 @@
       "status": "in-progress",
       "progress": 80,
       "tags": ["dashboard", "tooling"],
+      "branch": "claude/vibe-projects-hub-h0wpsm",
       "link": "index.html",
       "repo": "https://github.com/ericjimm44/freakenpr/tree/claude/vibe-projects-hub-h0wpsm",
       "updated": "2026-06-17"

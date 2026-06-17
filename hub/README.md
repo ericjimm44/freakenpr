@@ -33,3 +33,27 @@ Everything is data-driven — just edit `projects.json`. No code changes needed.
 
 The stat cards (total / in progress / completed / average progress) and the
 filter buttons update automatically from the list.
+
+## Auto-discovery from GitHub
+
+The hub can also pull projects straight from your repo's branches so the list
+stays current on its own. It's configured in the `github` block of
+`projects.json`:
+
+```json
+"github": {
+  "owner": "ericjimm44",
+  "repo": "freakenpr",
+  "autoDiscover": true,
+  "ignoreBranches": ["main", "master", "gh-pages"]
+}
+```
+
+On load the hub queries the public GitHub API for branches. Any branch **not**
+already covered by a curated entry (matched on its `branch` field) is added as
+an *In Progress* card tagged `auto-discovered`. To give an auto-discovered
+project a real description, status, or progress %, just add a curated entry with
+the same `branch` value — the curated entry wins.
+
+Set `"autoDiscover": false` to disable it. Note: unauthenticated GitHub API
+calls are rate-limited (~60/hour per IP), which is plenty for a dashboard.
