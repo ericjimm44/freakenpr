@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vibe Projects Hub</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="hub-header">
+    <h1>🚀 Vibe Projects Hub</h1>
+    <p class="tagline">Everything we're vibe-coding — what's shipped and what's still cooking.</p>
+  </header>
+
+  <section class="stats" id="stats">
+    <div class="stat-card">
+      <span class="stat-number" id="stat-total">0</span>
+      <span class="stat-label">Total</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number" id="stat-progress">0</span>
+      <span class="stat-label">In Progress</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number" id="stat-completed">0</span>
+      <span class="stat-label">Completed</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number" id="stat-avg">0%</span>
+      <span class="stat-label">Avg Progress</span>
+    </div>
+  </section>
+
+  <nav class="filters" id="filters">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="in-progress">In Progress</button>
+    <button class="filter-btn" data-filter="completed">Completed</button>
+  </nav>
+
+  <main id="projects" class="projects-grid">
+    <p class="loading">Loading projects…</p>
+  </main>
+
+  <footer class="hub-footer">
+    <p>Add a project by editing <code>hub/projects.json</code>.</p>
+  </footer>
+
+  <script src="hub.js"></script>
+</body>
+</html>

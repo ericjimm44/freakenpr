@@ -1,0 +1,24 @@
+{
+  "projects": [
+    {
+      "name": "Ping Pong Game",
+      "description": "Classic two-player Pong built with HTML canvas and vanilla JS.",
+      "status": "completed",
+      "progress": 100,
+      "tags": ["game", "canvas", "javascript"],
+      "link": "../index.html",
+      "repo": "https://github.com/ericjimm44/freakenpr/tree/ping-pong-game",
+      "updated": "2026-06-15"
+    },
+    {
+      "name": "Vibe Projects Hub",
+      "description": "Central dashboard to track every vibe-coded project and its progress.",
+      "status": "in-progress",
+      "progress": 80,
+      "tags": ["dashboard", "tooling"],
+      "link": "index.html",
+      "repo": "https://github.com/ericjimm44/freakenpr/tree/claude/vibe-projects-hub-h0wpsm",
+      "updated": "2026-06-17"
+    }
+  ]
+}
