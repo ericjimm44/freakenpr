@@ -177,8 +177,11 @@ function renderProjects() {
 
   container.innerHTML = list.map(projectCard).join('');
 
-  // Animate progress bars after they're in the DOM.
+  // Animate progress bars + stagger the card fade-in after they're in the DOM.
   requestAnimationFrame(() => {
+    container.querySelectorAll('.project-card').forEach((card, i) => {
+      card.style.animationDelay = (i * 60) + 'ms';
+    });
     container.querySelectorAll('.progress-fill').forEach(el => {
       el.style.width = el.style.getPropertyValue('--target');
     });
