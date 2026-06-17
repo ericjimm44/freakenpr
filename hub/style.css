@@ -20,6 +20,8 @@
 
 * { box-sizing: border-box; }
 
+html { scroll-behavior: smooth; }
+
 body {
   margin: 0;
   background: var(--bg);
@@ -30,9 +32,19 @@ body {
 
 .muted { color: var(--muted); }
 .accent { color: var(--accent); }
-.link-muted { color: var(--muted); font-size: 0.78rem; cursor: pointer; }
+.link-muted {
+  color: var(--muted); font-size: 0.78rem; cursor: pointer;
+  background: none; border: none; font-family: inherit; padding: 0;
+}
 .link-muted:hover { color: var(--accent); }
 h1, h2, h3 { margin: 0; }
+
+/* sections get breathing room when scrolled to via nav */
+.block, .panel, #top { scroll-margin-top: 18px; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
 
 /* ===== App grid ===== */
 .app {
@@ -86,6 +98,11 @@ h1, h2, h3 { margin: 0; }
   font-size: 0.88rem;
   cursor: pointer;
   transition: background 0.15s, color 0.15s;
+  background: none;
+  border: none;
+  font-family: inherit;
+  text-align: left;
+  width: 100%;
 }
 .nav-item:hover { background: rgba(255,255,255,0.06); color: #fff; }
 .nav-item.active { background: var(--accent); color: #fff; }
@@ -106,8 +123,11 @@ h1, h2, h3 { margin: 0; }
   background: linear-gradient(135deg, var(--accent), var(--pink));
   display: grid; place-items: center; font-size: 1.1rem; flex-shrink: 0;
 }
+.profile-card .who-wrap { min-width: 0; flex: 1; }
 .profile-card .who { color: #fff; font-weight: 600; font-size: 0.85rem; line-height: 1.2; }
 .profile-card .role { color: var(--accent); font-size: 0.68rem; }
+.xp-bar { height: 5px; background: rgba(255,255,255,0.12); border-radius: 99px; margin-top: 7px; overflow: hidden; }
+.xp-bar > span { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--accent), var(--pink)); width: 0; transition: width 0.9s ease; }
 
 /* ===== Main ===== */
 .main { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
@@ -258,6 +278,22 @@ h1, h2, h3 { margin: 0; }
 .badge-name { font-size: 0.6rem; color: var(--muted); line-height: 1.1; }
 
 .loading { color: var(--muted); grid-column: 1 / -1; }
+
+.quest-progress {
+  font-size: 0.72rem; font-weight: 700; color: var(--accent);
+  background: var(--accent-soft); padding: 2px 9px; border-radius: 99px;
+}
+
+.hub-footer {
+  text-align: center; color: var(--muted); font-size: 0.78rem;
+  padding: 8px 0 4px;
+}
+.hub-footer a { color: var(--accent); text-decoration: none; }
+.hub-footer a:hover { text-decoration: underline; }
+.hub-footer code {
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: 6px; padding: 1px 6px;
+}
 
 /* ===== Responsive ===== */
 @media (max-width: 1180px) {

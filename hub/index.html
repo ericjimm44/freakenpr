@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vibe Coding Hub</title>
+  <meta name="description" content="A gamified dashboard tracking every vibe-coded project — builder level, XP, streaks, progress, quests and achievements.">
+  <meta name="color-scheme" content="light">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -19,79 +22,83 @@
       </div>
 
       <nav class="nav">
-        <a class="nav-item active"><span class="nav-ico">🏠</span> Dashboard</a>
-        <a class="nav-item"><span class="nav-ico">📁</span> Projects</a>
-        <a class="nav-item"><span class="nav-ico">🎯</span> Quests</a>
-        <a class="nav-item"><span class="nav-ico">📈</span> Timeline</a>
-        <a class="nav-item"><span class="nav-ico">✂️</span> Snippets</a>
-        <a class="nav-item"><span class="nav-ico">🤖</span> AI Tools</a>
-        <a class="nav-item"><span class="nav-ico">🧩</span> Templates</a>
-        <a class="nav-item"><span class="nav-ico">🏆</span> Achievements</a>
-        <a class="nav-item"><span class="nav-ico">💬</span> Community</a>
-        <a class="nav-item"><span class="nav-ico">⚙️</span> Settings</a>
+        <button class="nav-item active" data-target="top"><span class="nav-ico">🏠</span> Dashboard</button>
+        <button class="nav-item" data-target="projects-section"><span class="nav-ico">📁</span> Projects</button>
+        <button class="nav-item" data-target="quests-section"><span class="nav-ico">🎯</span> Quests</button>
+        <button class="nav-item" data-target="activity-section"><span class="nav-ico">📈</span> Timeline</button>
+        <button class="nav-item" data-target="roadmap-section"><span class="nav-ico">🗺️</span> Roadmap</button>
+        <button class="nav-item" data-target="missions-section"><span class="nav-ico">🚩</span> Missions</button>
+        <button class="nav-item" data-target="skills-section"><span class="nav-ico">📊</span> Skills</button>
+        <button class="nav-item" data-target="achievements-section"><span class="nav-ico">🏆</span> Achievements</button>
       </nav>
 
       <div class="profile-card" id="profile-card"></div>
     </aside>
 
     <!-- ============ MAIN COLUMN ============ -->
-    <main class="main">
+    <main class="main" id="top">
       <header class="greeting">
         <div class="greeting-text">
           <h1 id="greeting-title">Good to see you 👋</h1>
           <p class="muted">Code. Build. Ship. Repeat.</p>
         </div>
-        <div class="greeting-art" aria-hidden="true">🌇</div>
+        <div class="greeting-art" id="greeting-art" aria-hidden="true">🌇</div>
       </header>
 
       <section class="stat-row" id="stat-row"></section>
 
-      <section class="block">
+      <section class="block" id="projects-section">
         <div class="block-head">
           <h2>Your Projects</h2>
-          <span class="link-muted">View all projects ▸</span>
+          <button class="link-muted" data-target="missions-section">View all projects ▸</button>
         </div>
         <div class="project-grid" id="project-grid">
           <p class="loading">Loading projects…</p>
         </div>
       </section>
 
-      <section class="block">
+      <section class="block" id="roadmap-section">
         <div class="block-head">
           <h2>Project Roadmap: <span id="roadmap-project" class="accent"></span></h2>
         </div>
         <div class="roadmap" id="roadmap"></div>
       </section>
 
-      <section class="block">
+      <section class="block" id="missions-section">
         <div class="block-head">
           <h2>Mission Board</h2>
-          <span class="link-muted">View full board ▸</span>
+          <button class="link-muted" data-target="roadmap-section">View roadmap ▸</button>
         </div>
         <div class="mission-board" id="mission-board"></div>
       </section>
+
+      <footer class="hub-footer">
+        Built with vibes · projects auto-sync from
+        <a href="https://github.com/ericjimm44/freakenpr" target="_blank" rel="noopener">GitHub</a>
+        · edit <code>hub/data.json</code> to update
+      </footer>
     </main>
 
     <!-- ============ RIGHT SIDEBAR ============ -->
     <aside class="rail">
-      <section class="panel">
-        <div class="panel-head"><h3>Builder Stats</h3><span class="link-muted">View all</span></div>
+      <section class="panel" id="skills-section">
+        <div class="panel-head"><h3>Builder Stats</h3></div>
         <div id="skills"></div>
       </section>
 
-      <section class="panel">
-        <div class="panel-head"><h3>Today's Quests</h3></div>
+      <section class="panel" id="quests-section">
+        <div class="panel-head"><h3>Today's Quests</h3><span class="quest-progress" id="quest-progress"></span></div>
         <div id="quests"></div>
         <div class="quest-reward" id="quest-reward"></div>
       </section>
 
-      <section class="panel">
+      <section class="panel" id="activity-section">
         <div class="panel-head"><h3>Activity Feed</h3></div>
         <div id="activity"></div>
       </section>
 
-      <section class="panel">
-        <div class="panel-head"><h3>Achievements</h3></div>
+      <section class="panel" id="achievements-section">
+        <div class="panel-head"><h3>Achievements</h3><span class="link-muted" id="ach-count"></span></div>
         <div class="badge-grid" id="achievements"></div>
       </section>
     </aside>
