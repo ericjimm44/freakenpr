@@ -3,20 +3,54 @@
 
 let DATA = {};
 let projects = [];
+let knownNames = null;        // names seen so far; null until first load
+let newNames = new Set();     // projects added since last render (for "NEW" tag)
+let lastSignature = '';       // change-detection for quiet auto-refresh
+let isRefreshing = false;
 
 async function init() {
+  const ok = await loadData();
+  if (!ok) return;
+
+  renderAll(true);
+  setupNav();
+  await discover(true);
+
+  setupRefresh();
+  startAutoRefresh();
+}
+
+// Fetch data.json (the base) and store it. Returns false on failure.
+async function loadData() {
   try {
     const res = await fetch('data.json', { cache: 'no-store' });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     DATA = await res.json();
+    projects = Array.isArray(DATA.projects) ? DATA.projects : [];
+    return true;
   } catch (err) {
     document.getElementById('project-grid').innerHTML =
       `<p class="loading">Couldn't load data.json (${err.message}). Run a local
        server: <code>python3 -m http.server</code> then open the hub URL.</p>`;
-    return;
+    return false;
   }
+}
 
-  projects = Array.isArray(DATA.projects) ? DATA.projects : [];
+// Append auto-discovered GitHub branches, then update the project views.
+async function discover(animate) {
+  if (!(DATA.github && DATA.github.autoDiscover)) return;
+  const found = await discoverFromGitHub(DATA.github);
+  if (found.length) {
+    projects = projects.concat(found);
+    trackNew();
+    renderStats();
+    renderProjects();
+    if (animate) animateBars();
+  }
+}
+
+function renderAll(animate) {
+  trackNew();
   renderProfile();
   renderGreeting();
   renderStats();
@@ -27,19 +61,87 @@ async function init() {
   renderQuests();
   renderActivity();
   renderAchievements();
-  animateBars();
-  setupNav();
+  if (animate) animateBars();
+}
 
-  if (DATA.github && DATA.github.autoDiscover) {
-    const found = await discoverFromGitHub(DATA.github);
-    if (found.length) {
-      projects = projects.concat(found);
-      renderStats();
-      renderProjects();
-      animateBars();
-    }
+// Flag projects whose names weren't present on the previous render.
+function trackNew() {
+  const names = projects.map(p => p.name);
+  if (knownNames === null) {
+    knownNames = new Set(names);          // first load: nothing is "new"
+    newNames = new Set();
+  } else {
+    newNames = new Set(names.filter(n => !knownNames.has(n)));
+    names.forEach(n => knownNames.add(n));
   }
 }
+
+function signature() {
+  return projects.map(p => `${p.name}:${p.status}:${p.progress}`).join('|');
+}
+
+/* ---------- manual refresh ---------- */
+function setupRefresh() {
+  const btn = document.getElementById('refresh-btn');
+  if (btn) btn.addEventListener('click', () => refresh(true));
+  lastSignature = signature();
+}
+
+async function refresh(manual) {
+  if (isRefreshing) return;
+  isRefreshing = true;
+  const btn = document.getElementById('refresh-btn');
+  if (manual && btn) btn.classList.add('spinning');
+
+  const ok = await loadData();
+  if (ok) {
+    await discover(false);
+    renderAll(false);
+
+    const sig = signature();
+    const changed = sig !== lastSignature;
+    lastSignature = sig;
+
+    if (newNames.size) {
+      toast(`✨ ${newNames.size} new project${newNames.size > 1 ? 's' : ''} added`);
+    } else if (manual) {
+      toast(changed ? '✅ Updated' : '✅ Up to date');
+    }
+    stampUpdated();
+  }
+
+  if (btn) btn.classList.remove('spinning');
+  isRefreshing = false;
+}
+
+// Poll in the background and refresh when the data actually changes; also
+// refresh when the tab regains focus so new projects show up promptly.
+function startAutoRefresh() {
+  stampUpdated();
+  setInterval(() => { if (!document.hidden) refresh(false); }, 60000);
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) refresh(false);
+  });
+}
+
+function stampUpdated() {
+  const el = document.getElementById('updated-at');
+  if (el) el.textContent = 'Updated ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+function toast(msg) {
+  let t = document.getElementById('toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'toast';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
 
 /* ---------- sidebar profile ---------- */
 function renderProfile() {
@@ -106,12 +208,14 @@ function renderProjects() {
     const done = p.status === 'completed';
     const cover = p.cover || 'linear-gradient(135deg,#7c5cff,#3db4ff)';
     const badge = done ? 'COMPLETED' : 'IN PROGRESS';
+    const isNew = newNames.has(p.name);
     const next = p.nextUp
       ? `<div class="pc-next">⏭️ Next up: <b>${esc(p.nextUp)}</b></div>` : '';
     return `
-      <article class="project-card">
+      <article class="project-card${isNew ? ' is-new' : ''}">
         <div class="pc-cover" style="background:${esc(cover)}">
           <span class="pc-badge ${done ? 'completed' : ''}">${badge}</span>
+          ${isNew ? '<span class="pc-new">NEW</span>' : ''}
         </div>
         <div class="pc-body">
           <div class="pc-name">${esc(p.name || 'Untitled')}</div>

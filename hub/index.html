@@ -50,7 +50,12 @@
       <section class="block" id="projects-section">
         <div class="block-head">
           <h2>Your Projects</h2>
-          <button class="link-muted" data-target="missions-section">View all projects ▸</button>
+          <div class="block-actions">
+            <span class="updated-at" id="updated-at"></span>
+            <button class="refresh-btn" id="refresh-btn" title="Check for new projects">
+              <span class="refresh-ico">🔄</span> Refresh
+            </button>
+          </div>
         </div>
         <div class="project-grid" id="project-grid">
           <p class="loading">Loading projects…</p>
