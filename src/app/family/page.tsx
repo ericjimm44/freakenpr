@@ -7,6 +7,7 @@ import { AppFrame } from "@/components/AppFrame";
 import { Icon } from "@/components/Icon";
 import { ChildAvatar } from "@/components/ChildAvatar";
 import { ChildEditorSheet } from "@/components/ChildEditorSheet";
+import { downloadBackup, backupFilename } from "@/lib/backup";
 import { cx } from "@/lib/utils";
 import type { Child, Family } from "@/lib/types";
 
@@ -19,6 +20,7 @@ function FamilyInner() {
   const removeChild = useStore((s) => s.removeChild);
   const exportData = useStore((s) => s.exportData);
   const importData = useStore((s) => s.importData);
+  const markBackedUp = useStore((s) => s.markBackedUp);
   const reset = useStore((s) => s.reset);
   const loadDemo = useStore((s) => s.loadDemo);
   const [confirmReset, setConfirmReset] = useState(false);
@@ -27,13 +29,8 @@ function FamilyInner() {
   const importRef = useRef<HTMLInputElement>(null);
 
   const doExport = () => {
-    const blob = new Blob([exportData()], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `adventure-dad-${family.surname.replace(/\s+/g, "-").toLowerCase()}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+    downloadBackup(backupFilename(family.surname), exportData());
+    markBackedUp();
   };
 
   const doImport = (file: File) => {

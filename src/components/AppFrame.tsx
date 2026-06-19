@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useStore } from "@/store/useStore";
 import { BottomNav } from "./BottomNav";
 import { Icon } from "./Icon";
+import { requestPersistentStorage } from "@/lib/backup";
 
 /**
  * Shared page frame: waits for the persisted store to hydrate, optionally
@@ -30,6 +31,11 @@ export function AppFrame({
       router.replace("/welcome");
     }
   }, [hydrated, onboarded, requireFamily, router]);
+
+  // Ask the browser to keep our memories from being evicted (local-first).
+  useEffect(() => {
+    void requestPersistentStorage();
+  }, []);
 
   if (!hydrated || (requireFamily && !onboarded) || redirecting) {
     return (

@@ -34,9 +34,11 @@ interface StoreActions {
   updateChild: (id: string, patch: Partial<Child>) => void;
   removeChild: (id: string) => void;
 
-  // data portability (stand-in for cloud sync until Supabase is wired)
+  // data portability + local-first durability (no cloud needed)
   exportData: () => string;
   importData: (json: string) => boolean;
+  lastBackupAt?: string;
+  markBackedUp: () => void;
 
   // missions
   addMissionFromSuggestion: (
@@ -73,10 +75,12 @@ export const useStore = create<Store>()(
     (set, get) => ({
       ...emptyState(),
       hydrated: false,
+      lastBackupAt: undefined,
       setHydrated: () => set({ hydrated: true }),
+      markBackedUp: () => set({ lastBackupAt: new Date().toISOString() }),
 
       loadDemo: () => set({ ...demoState() }),
-      reset: () => set({ ...emptyState() }),
+      reset: () => set({ ...emptyState(), lastBackupAt: undefined }),
 
       createFamily: (family) =>
         set({ family, onboarded: true }),
@@ -269,6 +273,7 @@ export const useStore = create<Store>()(
         missions: s.missions,
         achievements: s.achievements,
         onboarded: s.onboarded,
+        lastBackupAt: s.lastBackupAt,
       }),
       onRehydrateStorage: () => (state) => {
         state?.setHydrated();

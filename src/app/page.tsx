@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { useStore } from "@/store/useStore";
 import { AppFrame } from "@/components/AppFrame";
 import { ScoreRing } from "@/components/ScoreRing";
+import { BackupNudge } from "@/components/BackupNudge";
 import { MissionCard } from "@/components/MissionCard";
 import { Icon } from "@/components/Icon";
 import { ChildAvatar } from "@/components/ChildAvatar";
@@ -74,6 +75,11 @@ function HomeInner() {
             </p>
           </div>
         </Link>
+      </div>
+
+      {/* Local-first backup safety net */}
+      <div className="px-6 pt-4">
+        <BackupNudge />
       </div>
 
       {/* Anticipation: next mission tease */}
