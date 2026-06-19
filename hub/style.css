@@ -167,8 +167,40 @@ h1, h2, h3 { margin: 0; }
 
 /* Blocks */
 .block { background: var(--panel); border-radius: var(--radius); padding: 20px 22px; box-shadow: var(--shadow); }
-.block-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.block-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 10px; }
 .block-head h2 { font-size: 1.05rem; font-weight: 700; }
+.block-actions { display: flex; align-items: center; gap: 12px; }
+.updated-at { color: var(--muted); font-size: 0.72rem; }
+
+.refresh-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--accent-soft); color: var(--accent);
+  border: 1px solid transparent; border-radius: 99px;
+  padding: 6px 13px; font-family: inherit; font-size: 0.78rem; font-weight: 600;
+  cursor: pointer; transition: background 0.15s, border-color 0.15s;
+}
+.refresh-btn:hover { border-color: var(--accent); }
+.refresh-btn .refresh-ico { display: inline-block; font-size: 0.85rem; }
+.refresh-btn.spinning .refresh-ico { animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* "NEW" project highlight */
+.pc-new {
+  position: absolute; top: 10px; right: 10px;
+  background: var(--pink); color: #fff;
+  font-size: 0.58rem; font-weight: 800; letter-spacing: 0.5px;
+  padding: 3px 8px; border-radius: 99px;
+}
+.project-card.is-new { box-shadow: 0 0 0 2px var(--pink), var(--shadow); }
+
+/* refresh toast */
+#toast {
+  position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px);
+  background: var(--sidebar); color: #fff; font-size: 0.82rem; font-weight: 500;
+  padding: 10px 18px; border-radius: 99px; box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; z-index: 50;
+}
+#toast.show { opacity: 1; transform: translate(-50%, 0); }
 
 /* Project cards */
 .project-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
@@ -312,4 +344,5 @@ h1, h2, h3 { margin: 0; }
 @media (prefers-reduced-motion: reduce) {
   .project-card { animation: none; }
   .bar > span, .mini-bar > span { transition: none; }
+  .refresh-btn.spinning .refresh-ico { animation: none; }
 }
