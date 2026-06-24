@@ -203,26 +203,40 @@ function renderProjects() {
   const grid = document.getElementById('project-grid');
   if (!projects.length) { grid.innerHTML = `<p class="loading">No projects yet.</p>`; return; }
 
+  const focus = featuredProject();
   grid.innerHTML = projects.map(p => {
-    const pct = clampPct(p.progress);
     const done = p.status === 'completed';
     const cover = p.cover || 'linear-gradient(135deg,#7c5cff,#3db4ff)';
     const badge = done ? 'COMPLETED' : 'IN PROGRESS';
     const isNew = newNames.has(p.name);
+    const isFocus = focus && p === focus && !done;
+    const hasProgress = typeof p.progress === 'number';
+
+    // progress bar when curated, otherwise an "active · updated" line
+    const progress = hasProgress
+      ? `<div class="pc-progress-meta"><span>Progress</span><span>${clampPct(p.progress)}%</span></div>
+         <div class="bar"><span class="${done ? 'done' : ''}" data-w="${clampPct(p.progress)}%"></span></div>`
+      : `<div class="pc-active">🟢 Active${p.updatedRel ? ` · updated ${esc(p.updatedRel)}` : ''}</div>`;
+
+    const lang = p.language ? `<span class="pc-lang">${esc(p.language)}</span>` : '';
+    const link = p.repo
+      ? `<a class="pc-link" href="${esc(p.repo)}" target="_blank" rel="noopener">View repo ↗</a>` : '';
     const next = p.nextUp
       ? `<div class="pc-next">⏭️ Next up: <b>${esc(p.nextUp)}</b></div>` : '';
+
     return `
-      <article class="project-card${isNew ? ' is-new' : ''}">
+      <article class="project-card${isNew ? ' is-new' : ''}${isFocus ? ' is-focus' : ''}">
         <div class="pc-cover" style="background:${esc(cover)}">
           <span class="pc-badge ${done ? 'completed' : ''}">${badge}</span>
-          ${isNew ? '<span class="pc-new">NEW</span>' : ''}
+          ${isNew ? '<span class="pc-new">NEW</span>'
+                  : isFocus ? '<span class="pc-focus">⭐ CURRENT</span>' : ''}
         </div>
         <div class="pc-body">
-          <div class="pc-name">${esc(p.name || 'Untitled')}</div>
+          <div class="pc-name">${esc(p.name || 'Untitled')} ${lang}</div>
           <div class="pc-desc">${esc(p.description || '')}</div>
-          <div class="pc-progress-meta"><span>Progress</span><span>${pct}%</span></div>
-          <div class="bar"><span class="${done ? 'done' : ''}" data-w="${pct}%"></span></div>
+          ${progress}
           ${next}
+          ${link}
         </div>
       </article>`;
   }).join('');
@@ -355,36 +369,98 @@ function setupNav() {
 }
 
 /* ---------- GitHub auto-discovery ---------- */
+const REPO_COVERS = [
+  'linear-gradient(135deg,#8e2de2,#4a00e0)',
+  'linear-gradient(135deg,#11998e,#38ef7d)',
+  'linear-gradient(135deg,#f7971e,#ffd200)',
+  'linear-gradient(135deg,#2193b0,#6dd5ed)',
+  'linear-gradient(135deg,#ff6a88,#ff99ac)',
+  'linear-gradient(135deg,#36d1dc,#5b86e5)'
+];
+
 async function discoverFromGitHub(cfg) {
-  const { owner, repo } = cfg;
-  if (!owner || !repo) return [];
-  const ignore = new Set((cfg.ignoreBranches || []).map(b => b.toLowerCase()));
-  const known = new Set(projects.map(p => (p.branch || '').toLowerCase()).filter(Boolean));
-  try {
-    const res = await fetch(
-      `https://api.github.com/repos/${owner}/${repo}/branches?per_page=100`,
-      { headers: { 'Accept': 'application/vnd.github+json' } });
-    if (!res.ok) throw new Error(`GitHub API ${res.status}`);
-    const branches = await res.json();
-    const covers = ['linear-gradient(135deg,#ff6a88,#ff99ac)',
-                    'linear-gradient(135deg,#36d1dc,#5b86e5)',
-                    'linear-gradient(135deg,#56ab2f,#a8e063)'];
-    return branches.map(b => b.name)
-      .filter(n => !ignore.has(n.toLowerCase()) && !known.has(n.toLowerCase()))
-      .map((n, i) => ({
-        name: prettyBranch(n),
-        description: `Auto-discovered from branch ${n}.`,
-        status: 'in-progress',
-        progress: 0,
-        cover: covers[i % covers.length],
-        nextUp: 'Add details in data.json',
-        tags: ['auto-discovered'],
-        branch: n
-      }));
-  } catch (err) {
-    console.warn('Auto-discovery skipped:', err.message);
-    return [];
+  const out = [];
+  // names already represented by curated entries (by repo or branch)
+  const curated = new Set(
+    projects.flatMap(p => [p.repoName, p.branch, p.name])
+      .filter(Boolean).map(s => String(s).toLowerCase())
+  );
+
+  // ----- repo-level discovery: the user's public repos, newest push first -----
+  if (cfg.discoverRepos) {
+    const user = cfg.reposUser || cfg.owner;
+    const ignore = new Set((cfg.ignoreRepos || []).map(s => s.toLowerCase()));
+    try {
+      const res = await fetch(
+        `https://api.github.com/users/${user}/repos?per_page=100&sort=pushed`,
+        { headers: { 'Accept': 'application/vnd.github+json' } });
+      if (!res.ok) throw new Error(`GitHub API ${res.status}`);
+      const repos = await res.json();
+      repos
+        .filter(r => !r.fork && !r.archived
+          && !ignore.has(r.name.toLowerCase())
+          && !curated.has(r.name.toLowerCase()))
+        .sort((a, b) => new Date(b.pushed_at) - new Date(a.pushed_at))
+        .forEach((r, i) => out.push(repoToProject(r, i)));
+    } catch (err) {
+      console.warn('Repo discovery skipped:', err.message);
+    }
   }
+
+  // ----- branch-level discovery (optional, within one repo) -----
+  if (cfg.autoDiscover && cfg.owner && cfg.repo) {
+    const ignore = new Set((cfg.ignoreBranches || []).map(b => b.toLowerCase()));
+    try {
+      const res = await fetch(
+        `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/branches?per_page=100`,
+        { headers: { 'Accept': 'application/vnd.github+json' } });
+      if (res.ok) {
+        const branches = await res.json();
+        branches.map(b => b.name)
+          .filter(n => !ignore.has(n.toLowerCase()) && !curated.has(n.toLowerCase()))
+          .forEach((n, i) => out.push({
+            name: prettyBranch(n),
+            description: `Branch ${n} in ${cfg.repo}.`,
+            status: 'in-progress',
+            cover: REPO_COVERS[(i + 2) % REPO_COVERS.length],
+            branch: n,
+            tags: ['branch']
+          }));
+      }
+    } catch (err) {
+      console.warn('Branch discovery skipped:', err.message);
+    }
+  }
+
+  return out;
+}
+
+// Turn a GitHub repo object into a project card (no fake progress — shows
+// "Active · updated X ago" instead, unless data.json curates it).
+function repoToProject(r, i) {
+  return {
+    name: r.name,
+    description: r.description || 'No description yet.',
+    status: 'in-progress',
+    cover: REPO_COVERS[i % REPO_COVERS.length],
+    repoName: r.name,
+    repo: r.html_url,
+    language: r.language || null,
+    pushedAt: r.pushed_at,
+    updatedRel: relTime(r.pushed_at),
+    tags: r.language ? [r.language] : []
+  };
+}
+
+function relTime(iso) {
+  if (!iso) return '';
+  const secs = Math.max(0, (Date.now() - new Date(iso).getTime()) / 1000);
+  const d = Math.floor(secs / 86400);
+  if (secs < 3600) return Math.floor(secs / 60) + 'm ago';
+  if (secs < 86400) return Math.floor(secs / 3600) + 'h ago';
+  if (d < 30) return d + 'd ago';
+  if (d < 365) return Math.floor(d / 30) + 'mo ago';
+  return Math.floor(d / 365) + 'y ago';
 }
 
 function prettyBranch(branch) {

@@ -74,7 +74,30 @@ last update), not placeholders:
 
 To refresh them later, re-run those git counts and edit `data.json`.
 
-## Auto-discovery from GitHub
+## Auto-listing your projects (repos)
+
+The hub can show **whatever you're working on now** by pulling your GitHub repos,
+newest push first, so your current project stays at the top — no manual list to
+maintain. Configured in the `github` block of `data.json`:
+
+```json
+"github": {
+  "reposUser": "ericjimm44",
+  "discoverRepos": true,
+  "ignoreRepos": ["git_test"]
+}
+```
+
+- The most recently pushed project is tagged **⭐ CURRENT**.
+- Repo cards show language + "Active · updated Xd ago" instead of a progress bar.
+  To give a repo a real progress bar, roadmap, or rename it, add a `projects`
+  entry with `"repoName": "<repo>"` — your entry takes over that card.
+- Add repos you don't want to see (test/config repos) to `ignoreRepos`.
+
+> Note: a static page can only read **public** repos (no GitHub token), so private
+> repos won't appear here.
+
+## Branch auto-discovery (within one repo)
 
 On load the hub queries the public GitHub API for the repo's branches. Any branch
 not already covered by an entry in `data.json` (matched on its `branch` field) is
