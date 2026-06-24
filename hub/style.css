@@ -231,6 +231,22 @@ h1, h2, h3 { margin: 0; }
 .pc-next { font-size: 0.74rem; color: var(--ink); display: flex; align-items: center; gap: 6px; }
 .pc-next b { color: var(--accent); font-weight: 600; }
 
+.pc-active { font-size: 0.76rem; color: var(--green); font-weight: 600; }
+.pc-lang {
+  font-size: 0.62rem; font-weight: 600; color: var(--accent);
+  background: var(--accent-soft); padding: 2px 7px; border-radius: 99px;
+  vertical-align: middle;
+}
+.pc-link { font-size: 0.74rem; color: var(--accent); text-decoration: none; }
+.pc-link:hover { text-decoration: underline; }
+.pc-focus {
+  position: absolute; top: 10px; right: 10px;
+  background: var(--gold); color: #3a2a00;
+  font-size: 0.58rem; font-weight: 800; letter-spacing: 0.5px;
+  padding: 3px 8px; border-radius: 99px;
+}
+.project-card.is-focus { box-shadow: 0 0 0 2px var(--gold), var(--shadow); }
+
 /* Generic progress bar */
 .bar { height: 8px; background: var(--line); border-radius: 99px; overflow: hidden; }
 .bar > span { display: block; height: 100%; border-radius: 99px; background: var(--accent); width: 0; transition: width 0.9s ease; }

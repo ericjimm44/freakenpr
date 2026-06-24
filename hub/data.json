@@ -1,8 +1,11 @@
 {
   "github": {
+    "reposUser": "ericjimm44",
+    "discoverRepos": true,
+    "ignoreRepos": ["git_test"],
+    "autoDiscover": false,
     "owner": "ericjimm44",
     "repo": "freakenpr",
-    "autoDiscover": true,
     "ignoreBranches": ["main", "master", "gh-pages"]
   },
   "builder": {
@@ -49,7 +52,8 @@
       "cover": "linear-gradient(135deg,#8e2de2,#4a00e0)",
       "nextUp": "Wire up live GitHub stats",
       "featured": true,
-      "branch": "claude/vibe-projects-hub-h0wpsm",
+      "repoName": "freakenpr",
+      "repo": "https://github.com/ericjimm44/freakenpr",
       "tags": ["dashboard", "javascript"],
       "roadmap": [
         { "stage": "Idea", "state": "complete" },
